@@ -1,0 +1,13 @@
+parameters:
+    level: 5
+    paths:
+        - src
+        - config
+    tmpDir: build/phpstan
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        # Profiles/manager are Macroable; abstracts named in profiles are host classes.
+        -
+            identifier: class.notFound
+            path: config/license-override.php
