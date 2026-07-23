@@ -2,7 +2,7 @@
 
 Neutralize any vendor's license / call-home layer with a composable profile.
 
-## A profile has four levers
+## A profile's levers
 
 | Lever | Method | Effect |
 |-------|--------|--------|
@@ -10,6 +10,13 @@ Neutralize any vendor's license / call-home layer with a composable profile.
 | Sink call-home | `neutralize($keys, $sink)` | Rewrite existing config URL keys to a dead sink (absent keys untouched). |
 | Override config | `setConfig($key, $value)` | Set any config key unconditionally (e.g. a telemetry flag). |
 | Block routes | `blockRoutes($patterns, $groups)` | Return 404 for vendor route patterns. |
+| Runtime hook | `onRegister($fn)` / `onBooted($fn)` | Run a closure in the register / post-boot phase — seed state, re-register a closure, extend a bound array. |
+| Fake call-home | `fakeHttp($host, $response)` | Answer a call-home host locally; other hosts pass through. |
+
+The declarative config below carries the data levers; the closure levers
+(`onRegister`/`onBooted`/`fakeHttp`) are set at runtime and stay out of config (so `config:cache` is
+safe). Every lever applies fail-safe and is recorded — see
+[Diagnostics & testing](diagnostics-and-testing.md).
 
 ## Declarative (config)
 
