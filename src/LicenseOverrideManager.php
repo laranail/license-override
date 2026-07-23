@@ -38,11 +38,23 @@ final class LicenseOverrideManager implements OverrideRegistry
     /** @var array<string, true> profile names whose booted hooks/fakes have run */
     private array $booted = [];
 
+    private BootReport $report;
+
     public function __construct(
         private readonly Container $container,
         private readonly ConfigRepository $config,
         private readonly Router $router,
-    ) {}
+    ) {
+        $this->report = new BootReport;
+    }
+
+    /**
+     * What the engine did (and any levers that failed) while applying profiles.
+     */
+    public function report(): BootReport
+    {
+        return $this->report;
+    }
 
     public function profile(string $name): Profile
     {
@@ -233,7 +245,10 @@ final class LicenseOverrideManager implements OverrideRegistry
     {
         try {
             $fn();
+            $this->report->recordApplied($context);
         } catch (Throwable $e) {
+            $this->report->recordFailure($context, $e->getMessage());
+
             if ($this->container->bound('log')) {
                 $this->container->make('log')->warning(
                     "[license-override] lever failed ({$context}): {$e->getMessage()}"

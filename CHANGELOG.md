@@ -5,6 +5,20 @@ All notable changes to `laranail/license-override` are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-07-23
+
+### Added
+- **Boot report + `license-override:health`** — the engine now records which levers applied and which
+  failed (levers stay fail-safe) into a `BootReport`, exposed via `OverrideRegistry::report()` and the
+  `license-override:health` doctor command (non-zero exit when a lever failed, for CI/deploy gates).
+- **`LicenseOverride::fake()`** test seam — swaps the registry for a recording `FakeOverrideRegistry`
+  so a consuming app can assert which overrides its providers registered, applying no side effects.
+
+### Notes
+- The design doc's Manager/driver pattern is realized by the two-package split (the presets package's
+  `Preset` contract + auto-detection is the driver layer), so the engine keeps its `Profile` DSL rather
+  than adding a redundant driver system.
+
 ## [1.1.0] - 2026-07-23
 
 ### Added

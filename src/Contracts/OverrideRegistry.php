@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\License\Override\Contracts;
 
+use Simtabi\Laranail\License\Override\BootReport;
 use Simtabi\Laranail\License\Override\Profile;
 
 /**
@@ -68,4 +69,9 @@ interface OverrideRegistry
      * Whether any profile is enabled.
      */
     public function isEnabled(): bool;
+
+    /**
+     * What the engine did (and any levers that failed) while applying profiles.
+     */
+    public function report(): BootReport;
 }

@@ -152,3 +152,40 @@ it('swallows a throwing lever so boot is never bricked', function (): void {
 
     expect(true)->toBeTrue(); // reached only if applyBooted did not rethrow
 });
+
+it('records applied levers and failures in the boot report', function (): void {
+    LicenseOverride::profile('rep')
+        ->enable()
+        ->onBooted(function (): void {})
+        ->onBooted(function (): void {
+            throw new RuntimeException('boom');
+        })
+        ->apply();
+
+    $report = app(OverrideRegistry::class)->report();
+
+    expect($report->applied())->not->toBeEmpty()
+        ->and($report->hasFailures())->toBeTrue()
+        ->and($report->failures()[0]['error'])->toContain('boom');
+});
+
+it('license-override:health exits 0 when healthy and non-zero on a failed lever', function (): void {
+    LicenseOverride::profile('healthy')->enable()->onBooted(function (): void {})->apply();
+    $this->artisan('license-override:health')->assertExitCode(0);
+
+    LicenseOverride::profile('broken')->enable()->onBooted(function (): void {
+        throw new RuntimeException('nope');
+    })->apply();
+    $this->artisan('license-override:health')->assertExitCode(1);
+});
+
+it('fake() records profiles without applying any side effects', function (): void {
+    config(['acme.verify_url' => 'https://real.test/verify']);
+
+    $fake = LicenseOverride::fake();
+    LicenseOverride::profile('acme')->neutralize(['acme.verify_url'])->apply();
+
+    expect($fake->applied('acme'))->toBeTrue()
+        ->and($fake->appliedProfiles())->toContain('acme')
+        ->and(config('acme.verify_url'))->toBe('https://real.test/verify'); // untouched
+});
