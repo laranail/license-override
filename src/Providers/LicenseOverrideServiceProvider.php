@@ -42,6 +42,15 @@ final class LicenseOverrideServiceProvider extends PackageServiceProvider
     #[Override]
     public function packageBooted(): void
     {
-        $this->app->make(OverrideRegistry::class)->applyRuntime();
+        $registry = $this->app->make(OverrideRegistry::class);
+        $registry->applyRuntime();
+
+        // Booted hooks + HTTP fakes run after every provider has booted, so an
+        // override wins regardless of provider order (e.g. re-registering a view
+        // a third-party provider also registers). If the app is already booted
+        // (runtime registration), the callback fires immediately.
+        $this->app->booted(static function () use ($registry): void {
+            $registry->applyBooted();
+        });
     }
 }

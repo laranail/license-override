@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\License\Override;
 
+use Closure;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Http\Client\Request as HttpClientRequest;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Traits\Macroable;
 use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
 use Simtabi\Laranail\License\Override\Http\Middleware\BlockOverriddenRoutes;
+use Throwable;
 
 /**
  * Default {@see OverrideRegistry}. Holds profiles and applies them: container
@@ -27,6 +31,12 @@ final class LicenseOverrideManager implements OverrideRegistry
 
     /** @var array<string, true> route groups already given the block middleware */
     private array $guardedGroups = [];
+
+    /** @var array<string, true> profile names whose register hooks have run */
+    private array $registered = [];
+
+    /** @var array<string, true> profile names whose booted hooks/fakes have run */
+    private array $booted = [];
 
     public function __construct(
         private readonly Container $container,
@@ -82,11 +92,8 @@ final class LicenseOverrideManager implements OverrideRegistry
     public function applyBindings(): void
     {
         foreach ($this->enabledProfiles() as $profile) {
-            foreach ($profile->rebindings as $abstract => $concrete) {
-                if (class_exists($abstract) || interface_exists($abstract)) {
-                    $this->container->bind($abstract, $concrete);
-                }
-            }
+            $this->rebind($profile);
+            $this->registerOnce($profile);
         }
     }
 
@@ -98,20 +105,36 @@ final class LicenseOverrideManager implements OverrideRegistry
         }
     }
 
+    public function applyBooted(): void
+    {
+        $fakes = [];
+
+        foreach ($this->enabledProfiles() as $profile) {
+            $fakes = [...$fakes, ...$this->bootOnce($profile)];
+        }
+
+        if ($fakes !== []) {
+            $this->safely(fn () => $this->installHttpFakes($fakes), 'fakeHttp');
+        }
+    }
+
     public function applyProfile(Profile $profile): void
     {
         if (! $profile->enabled) {
             return;
         }
 
-        foreach ($profile->rebindings as $abstract => $concrete) {
-            if (class_exists($abstract) || interface_exists($abstract)) {
-                $this->container->bind($abstract, $concrete);
-            }
-        }
-
+        $this->rebind($profile);
+        $this->registerOnce($profile);
         $this->applyConfig($profile);
         $this->guard($profile->middlewareGroups);
+
+        // Built at runtime (after boot): run the booted hooks + fakes now.
+        $fakes = $this->bootOnce($profile);
+
+        if ($fakes !== []) {
+            $this->safely(fn () => $this->installHttpFakes($fakes), 'fakeHttp');
+        }
     }
 
     public function blockedRoutes(): array
@@ -128,6 +151,95 @@ final class LicenseOverrideManager implements OverrideRegistry
     public function isEnabled(): bool
     {
         return $this->enabledProfiles() !== [];
+    }
+
+    private function rebind(Profile $profile): void
+    {
+        foreach ($profile->rebindings as $abstract => $concrete) {
+            if (class_exists($abstract) || interface_exists($abstract)) {
+                $this->safely(fn () => $this->container->bind($abstract, $concrete), "rebind {$abstract}");
+            }
+        }
+    }
+
+    /**
+     * Run a profile's register hooks exactly once (idempotent across the engine
+     * provider and any preset provider that also applies the shared registry).
+     */
+    private function registerOnce(Profile $profile): void
+    {
+        if (isset($this->registered[$profile->name])) {
+            return;
+        }
+
+        $this->registered[$profile->name] = true;
+        $this->runHooks($profile->registerHooks, $profile->name, 'onRegister');
+    }
+
+    /**
+     * Run a profile's booted hooks exactly once and return its HTTP fakes (empty
+     * on subsequent calls). Idempotent for the same reason as {@see registerOnce()}.
+     *
+     * @return array<string, mixed>
+     */
+    private function bootOnce(Profile $profile): array
+    {
+        if (isset($this->booted[$profile->name])) {
+            return [];
+        }
+
+        $this->booted[$profile->name] = true;
+        $this->runHooks($profile->bootedHooks, $profile->name, 'onBooted');
+
+        return $profile->httpFakes;
+    }
+
+    /**
+     * @param  list<callable>  $hooks
+     */
+    private function runHooks(array $hooks, string $profile, string $phase): void
+    {
+        foreach ($hooks as $i => $hook) {
+            $this->safely(fn () => $hook($this->container), "{$profile}.{$phase}[{$i}]");
+        }
+    }
+
+    /**
+     * Install a single pass-through HTTP fake covering every profile's stubs.
+     * A request whose URL contains a registered host substring is answered from
+     * that stub; any other request returns null from the closure and executes
+     * against the real network.
+     *
+     * @param  array<string, mixed>  $fakes  host substring => response|Closure(Request)
+     */
+    private function installHttpFakes(array $fakes): void
+    {
+        Http::fake(function (HttpClientRequest $request) use ($fakes): mixed {
+            foreach ($fakes as $host => $response) {
+                if (str_contains($request->url(), (string) $host)) {
+                    return $response instanceof Closure ? $response($request) : Http::response($response);
+                }
+            }
+
+            return null; // pass-through: execute the real request
+        });
+    }
+
+    /**
+     * Run a lever, swallowing (and logging) any failure so a broken override can
+     * never brick application boot.
+     */
+    private function safely(callable $fn, string $context): void
+    {
+        try {
+            $fn();
+        } catch (Throwable $e) {
+            if ($this->container->bound('log')) {
+                $this->container->make('log')->warning(
+                    "[license-override] lever failed ({$context}): {$e->getMessage()}"
+                );
+            }
+        }
     }
 
     private function applyConfig(Profile $profile): void

@@ -10,7 +10,9 @@ return [
     |--------------------------------------------------------------------------
     | Each profile neutralizes one vendor's license / call-home layer. Profiles
     | may also be registered/mutated at runtime via the LicenseOverride facade
-    | or the OverrideRegistry contract. Example (commented):
+    | or the OverrideRegistry contract. Closure-based levers (onRegister/onBooted/
+    | fakeHttp) are runtime-only — they are never declared here, so this file
+    | stays config:cache-safe. Example (commented):
     |
     | 'profiles' => [
     |     'acme' => [

@@ -13,6 +13,7 @@ use Simtabi\Laranail\License\Override\LicenseOverrideManager;
  * @method static array<string, \Simtabi\Laranail\License\Override\Profile> profiles()
  * @method static void applyBindings()
  * @method static void applyRuntime()
+ * @method static void applyBooted()
  * @method static void applyProfile(\Simtabi\Laranail\License\Override\Profile $profile)
  * @method static list<string> blockedRoutes()
  * @method static bool isEnabled()

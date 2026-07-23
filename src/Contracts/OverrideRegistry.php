@@ -45,6 +45,13 @@ interface OverrideRegistry
     public function applyRuntime(): void;
 
     /**
+     * Run each enabled profile's booted hooks and install its HTTP fakes. Must be
+     * invoked from $app->booted() so it runs after every provider has booted
+     * (order-independent).
+     */
+    public function applyBooted(): void;
+
+    /**
      * Apply a single profile immediately (rebindings + config + middleware).
      * Use when adding a profile at runtime after boot.
      */

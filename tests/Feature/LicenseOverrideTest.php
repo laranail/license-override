@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
 use Simtabi\Laranail\License\Override\Facades\LicenseOverride;
@@ -75,4 +76,79 @@ it('loads declarative profiles from config', function (): void {
 
     expect(config('some.url'))->toBe('http://127.0.0.1:9/disabled')
         ->and($registry->blockedRoutes())->toContain('decl/ping');
+});
+
+it('runs register hooks then booted hooks when a profile is applied at runtime', function (): void {
+    $log = [];
+
+    LicenseOverride::profile('hooks')
+        ->onRegister(function () use (&$log): void {
+            $log[] = 'register';
+        })
+        ->onBooted(function () use (&$log): void {
+            $log[] = 'booted';
+        })
+        ->apply();
+
+    expect($log)->toBe(['register', 'booted']);
+});
+
+it('runs booted hooks for enabled profiles via applyBooted', function (): void {
+    $ran = false;
+
+    LicenseOverride::profile('b')->enable()->onBooted(function () use (&$ran): void {
+        $ran = true;
+    });
+    app(OverrideRegistry::class)->applyBooted();
+
+    expect($ran)->toBeTrue();
+});
+
+it('runs register and booted hooks exactly once across repeated applications', function (): void {
+    $registerRuns = 0;
+    $bootedRuns = 0;
+
+    LicenseOverride::profile('idem')
+        ->enable()
+        ->onRegister(function () use (&$registerRuns): void {
+            $registerRuns++;
+        })
+        ->onBooted(function () use (&$bootedRuns): void {
+            $bootedRuns++;
+        });
+
+    $registry = app(OverrideRegistry::class);
+
+    // Simulate the engine provider AND a preset provider both applying, plus the
+    // booted callback firing more than once.
+    $registry->applyBindings();
+    $registry->applyBindings();
+    $registry->applyBooted();
+    $registry->applyBooted();
+
+    expect($registerRuns)->toBe(1)
+        ->and($bootedRuns)->toBe(1);
+});
+
+it('fakes matching hosts and passes non-matching hosts through to other fakes', function (): void {
+    LicenseOverride::profile('http')->fakeHttp('license.example.com', ['licensed' => true])->apply();
+
+    // A separately-registered fake for a different host still wins, proving our
+    // closure returns null (pass-through) for non-matching hosts.
+    Http::fake(['other.example.com/*' => Http::response(['other' => true])]);
+
+    expect(Http::get('https://license.example.com/verify')->json('licensed'))->toBeTrue()
+        ->and(Http::get('https://other.example.com/ping')->json('other'))->toBeTrue();
+});
+
+it('swallows a throwing lever so boot is never bricked', function (): void {
+    LicenseOverride::profile('boom')
+        ->enable()
+        ->onBooted(function (): void {
+            throw new RuntimeException('kaboom');
+        });
+
+    app(OverrideRegistry::class)->applyBooted();
+
+    expect(true)->toBeTrue(); // reached only if applyBooted did not rethrow
 });

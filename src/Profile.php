@@ -35,6 +35,32 @@ final class Profile
         public array $middlewareGroups = ['web'],
     ) {}
 
+    /**
+     * Closures run in the register phase (via {@see OverrideRegistry::applyBindings()}).
+     * Each receives the container. Rare — most work belongs in {@see onBooted()}.
+     *
+     * @var list<callable>
+     */
+    public array $registerHooks = [];
+
+    /**
+     * Closures run inside $app->booted() — after every provider has booted, so
+     * they are order-independent (e.g. re-registering a Fortify view, seeding
+     * stored state, extending a container-bound array). Each receives the container.
+     *
+     * @var list<callable>
+     */
+    public array $bootedHooks = [];
+
+    /**
+     * Opt-in call-home interception: host substring => response (a value passed to
+     * Http::response(), or a Closure(Request): mixed). Non-matching hosts pass
+     * through to the network (the fake closure returns null).
+     *
+     * @var array<string, mixed>
+     */
+    public array $httpFakes = [];
+
     public function enable(bool $on = true): static
     {
         $this->enabled = $on;
@@ -98,6 +124,39 @@ final class Profile
         if ($groups !== null) {
             $this->middlewareGroups = array_values(array_unique([...$this->middlewareGroups, ...$groups]));
         }
+
+        return $this;
+    }
+
+    /**
+     * Register a closure to run in the register phase (receives the container).
+     */
+    public function onRegister(callable $hook): static
+    {
+        $this->registerHooks[] = $hook;
+
+        return $this;
+    }
+
+    /**
+     * Register a closure to run inside $app->booted() — after all providers have
+     * booted, so it wins regardless of provider order (receives the container).
+     */
+    public function onBooted(callable $hook): static
+    {
+        $this->bootedHooks[] = $hook;
+
+        return $this;
+    }
+
+    /**
+     * Intercept call-home to a host: any outgoing HTTP whose URL contains $host is
+     * answered with $response (a value for Http::response(), or a Closure(Request)).
+     * Everything else passes through to the real network. Opt-in.
+     */
+    public function fakeHttp(string $host, mixed $response): static
+    {
+        $this->httpFakes[$host] = $response;
 
         return $this;
     }
