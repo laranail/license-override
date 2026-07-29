@@ -11,6 +11,24 @@ permissions:
   contents: read
 
 jobs:
+  # A branch-alias that lags the newest tag makes the default branch advertise an
+  # old minor, so Composer can offer main to consumers pinned to that minor and
+  # hand them newer code. This repository had drifted that way: v1.2.0 was tagged
+  # while the alias still read 1.1.x-dev, and laranail/licence-override-vendor-presets
+  # requires "^1.1". The check allows the alias to run ahead of the last tag —
+  # normal mid-minor — and fails only when it falls behind.
+  branch-alias:
+    name: Branch alias
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0   # the drift check compares against the newest tag
+
+      - name: Assert branch-alias has not fallen behind the newest tag
+        run: bash .scripts/check-branch-alias.sh
+
   analyse:
     name: Pint · PHPStan · Rector
     runs-on: ubuntu-latest
