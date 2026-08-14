@@ -37,7 +37,7 @@ LicenseOverride::profile('acme')
 
 Everything is composable and mutable at runtime; the block middleware reads the live profile set,
 and the manager and profiles are `Macroable`. Levers apply **fail-safe** (a broken override never
-bricks boot) and are recorded — check `php artisan license-override:health`, and use
+bricks boot) and are recorded — check `php artisan 'laranail::license-override.health'`, and use
 `LicenseOverride::fake()` in your own tests.
 
 ## <a name="documentation"></a>Documentation
@@ -49,7 +49,7 @@ Hosted at **<https://opensource.simtabi.com/documentation/laranail/license-overr
 - [Getting started](docs/getting-started.md)
 - [Configuration](docs/configuration.md)
 - [Architecture](docs/architecture.md)
-- [Diagnostics & testing](docs/diagnostics-and-testing.md) — the boot report, `license-override:health`, and `fake()`.
+- [Diagnostics & testing](docs/diagnostics-and-testing.md) — the boot report, `laranail::license-override.health`, and `fake()`.
 
 ### Reference
 - [`LicenseOverrideManager` / `OverrideRegistry`](docs/tools/manager.md)

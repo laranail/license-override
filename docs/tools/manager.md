@@ -28,9 +28,9 @@ engine provider and a preset provider both apply the shared registry — and eve
 
 ## Extras (concrete)
 
-- `loadFromConfig()` — hydrate profiles from `config('license-override.profiles')`.
+- `loadFromConfig()` — hydrate profiles from `config('laranail.license-override.profiles')`.
 - `LicenseOverrideManager::resolve()` — boot-safe accessor (bound singleton or self-bootstrapped).
-- `report()` — the `BootReport` surfaced by the `license-override:health` command.
+- `report()` — the `BootReport` surfaced by the `laranail::license-override.health` command.
 - `Macroable` — add custom helper methods at runtime.
 - Testing: `LicenseOverride::fake()` swaps in a recording registry — see
   [Diagnostics & testing](../diagnostics-and-testing.md).

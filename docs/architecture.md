@@ -6,7 +6,7 @@ How profiles are applied, when, and why it survives updates.
 
 `LicenseOverrideManager` (bound to the `OverrideRegistry` contract) holds named `Profile`
 instances. Each profile carries rebindings, config overrides, neutralizations, blocked routes, and
-target middleware groups. Profiles come from `config('license-override.profiles')` (declarative) or
+target middleware groups. Profiles come from `config('laranail.license-override.profiles')` (declarative) or
 from runtime calls to `LicenseOverride::profile(...)`.
 
 ## Application phases

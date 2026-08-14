@@ -64,7 +64,7 @@ it('the block middleware 404s blocked paths and passes others', function (): voi
 
 it('loads declarative profiles from config', function (): void {
     config(['some.url' => 'https://x']);
-    config(['license-override.profiles.decl' => [
+    config(['laranail.license-override.profiles.decl' => [
         'enabled' => true,
         'neutralize' => ['sink' => 'http://127.0.0.1:9/disabled', 'keys' => ['some.url']],
         'block_routes' => ['decl/ping'],
@@ -169,14 +169,14 @@ it('records applied levers and failures in the boot report', function (): void {
         ->and($report->failures()[0]['error'])->toContain('boom');
 });
 
-it('license-override:health exits 0 when healthy and non-zero on a failed lever', function (): void {
+it('laranail::license-override.health exits 0 when healthy and non-zero on a failed lever', function (): void {
     LicenseOverride::profile('healthy')->enable()->onBooted(function (): void {})->apply();
-    $this->artisan('license-override:health')->assertExitCode(0);
+    $this->artisan('laranail::license-override.health')->assertExitCode(0);
 
     LicenseOverride::profile('broken')->enable()->onBooted(function (): void {
         throw new RuntimeException('nope');
     })->apply();
-    $this->artisan('license-override:health')->assertExitCode(1);
+    $this->artisan('laranail::license-override.health')->assertExitCode(1);
 });
 
 it('fake() records profiles without applying any side effects', function (): void {

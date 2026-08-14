@@ -23,10 +23,15 @@ final class LicenseOverrideServiceProvider extends PackageServiceProvider
     #[Override]
     public function configurePackage(Package $package): void
     {
+        // No withoutConfigNamespacing(): that opt-out registers the bare key
+        // `license-override`, and Laravel's config repository is a flat map, so
+        // an application or another package with a file of that name replaces
+        // this one wholesale. The namespaced form publishes to
+        // config/laranail/license-override.php and reads as
+        // config('laranail.license-override.*').
         $package
             ->name('laranail/license-override')
-            ->hasConfigFile('license-override')
-            ->withoutConfigNamespacing();
+            ->hasConfigFile('license-override');
     }
 
     #[Override]

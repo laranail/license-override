@@ -30,7 +30,7 @@ interface OverrideRegistry
     public function profiles(): array;
 
     /**
-     * Hydrate declarative profiles from config('license-override.profiles').
+     * Hydrate declarative profiles from config('laranail.license-override.profiles').
      */
     public function loadFromConfig(): void;
 

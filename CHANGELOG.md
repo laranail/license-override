@@ -5,6 +5,35 @@ All notable changes to `laranail/license-override` are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+Both names this package registers into a framework-owned registry are now vendor-scoped. Those
+registries are flat maps, so a second package claiming a name does not collide loudly — it silently
+replaces the first, and the loser's command runs somebody else's code under its own name.
+
+| Was | Now |
+|---|---|
+| `license-override:health` | `laranail::license-override.health` |
+| `config('license-override.*')` | `config('laranail.license-override.*')` |
+| `config/license-override.php` | `config/laranail/license-override.php` |
+
+The command extends `laranail/package-tools`' `Command` base and uses `SupportsNamespacedNames`,
+which is what allows the `::` past Symfony's `validateName()`; dispatch still works because Symfony
+resolves an exact name before falling back to splitting on `:`. No short alias is registered — a
+`license-override:health` alias would hand back exactly the collision the namespaced name exists to
+avoid.
+
+The config change is the removal of a `withoutConfigNamespacing()` opt-out. Applications publishing
+or reading the old flat key must move to the namespaced one; `vendor:publish
+--tag=laranail::license-override-config` writes the new path.
+
+Guarded by `tests/Feature/NamingConventionTest.php`, which reads the console kernel, the config
+repository and `ServiceProvider::publishableGroups()` on a booted app rather than the provider's
+source — `hasConfigFile('license-override')` passes an id, not a key, so the source proves nothing
+either way.
+
 ## [1.2.0] - 2026-07-23
 
 ### Added

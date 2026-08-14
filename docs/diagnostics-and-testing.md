@@ -1,6 +1,6 @@
 # Diagnostics & testing
 
-The boot report, the `license-override:health` command, and the `LicenseOverride::fake()` test seam.
+The boot report, the `laranail::license-override.health` command, and the `LicenseOverride::fake()` test seam.
 
 ## The boot report
 
@@ -19,13 +19,13 @@ $report->hasFailures();  // bool
 $report->isHealthy();    // bool — no failures
 ```
 
-## `license-override:health`
+## `laranail::license-override.health`
 
 A doctor command that prints the active profiles, the aggregate blocked routes, and any failed
 levers. It **exits non-zero when a lever failed**, so a deploy or CI step can gate on it:
 
 ```bash
-php artisan license-override:health
+php artisan 'laranail::license-override.health'
 ```
 
 ```

@@ -8,7 +8,7 @@ namespace Simtabi\Laranail\License\Override;
  * A record of what the override engine did while applying profiles: which levers
  * ran, and which failed. Levers are fail-safe (a failure is caught, logged, and
  * recorded here rather than thrown), so this report is how a consumer sees the
- * degraded state — surfaced by the `license-override:health` command.
+ * degraded state — surfaced by the `laranail::license-override.health` command.
  */
 final class BootReport
 {

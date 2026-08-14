@@ -67,12 +67,12 @@ final class LicenseOverrideManager implements OverrideRegistry
     }
 
     /**
-     * Hydrate declarative profiles from config('license-override.profiles').
+     * Hydrate declarative profiles from config('laranail.license-override.profiles').
      */
     public function loadFromConfig(): void
     {
         /** @var array<string, array<string, mixed>> $declared */
-        $declared = (array) $this->config->get('license-override.profiles', []);
+        $declared = (array) $this->config->get('laranail.license-override.profiles', []);
 
         foreach ($declared as $name => $spec) {
             $profile = $this->profile($name)->enable((bool) ($spec['enabled'] ?? true));
