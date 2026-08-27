@@ -15,7 +15,7 @@ final class Profile
 {
     use Macroable;
 
-    public const DEFAULT_SINK = 'http://127.0.0.1:9/disabled';
+    public const string DEFAULT_SINK = 'http://127.0.0.1:9/disabled';
 
     /**
      * @param  array<class-string, class-string>  $rebindings  abstract => concrete

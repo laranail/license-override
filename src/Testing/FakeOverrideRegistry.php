@@ -24,7 +24,7 @@ final class FakeOverrideRegistry implements OverrideRegistry
     /** @var list<string> profile names passed to applyProfile()/apply() */
     private array $appliedProfiles = [];
 
-    private BootReport $report;
+    private readonly BootReport $report;
 
     public function __construct()
     {
@@ -70,13 +70,7 @@ final class FakeOverrideRegistry implements OverrideRegistry
 
     public function isEnabled(): bool
     {
-        foreach ($this->profiles as $profile) {
-            if ($profile->enabled) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->profiles, fn (Profile $profile): bool => $profile->enabled);
     }
 
     public function report(): BootReport

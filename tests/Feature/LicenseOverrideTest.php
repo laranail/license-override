@@ -14,9 +14,9 @@ it('binds the registry contract', function (): void {
 });
 
 it('rebinds a container abstract via a profile applied at runtime', function (): void {
-    interface_exists(GuardTarget::class) or eval('interface GuardTarget {}');
-    class_exists(RealGuard::class) or eval('class RealGuard implements GuardTarget {}');
-    class_exists(NoopGuard::class) or eval('class NoopGuard implements GuardTarget {}');
+    interface_exists(GuardTarget::class) || eval('interface GuardTarget {}');
+    class_exists(RealGuard::class) || eval('class RealGuard implements GuardTarget {}');
+    class_exists(NoopGuard::class) || eval('class NoopGuard implements GuardTarget {}');
 
     app()->bind(GuardTarget::class, RealGuard::class);
 
@@ -53,9 +53,9 @@ it('the block middleware 404s blocked paths and passes others', function (): voi
     // (group registration is covered by the test above).
     LicenseOverride::profile('acme')->blockRoutes(['acme/verify', 'acme/update/*'])->apply();
 
-    Route::middleware(BlockOverriddenRoutes::class)->get('acme/verify', fn () => 'x');
-    Route::middleware(BlockOverriddenRoutes::class)->get('acme/update/now', fn () => 'x');
-    Route::middleware(BlockOverriddenRoutes::class)->get('dashboard', fn () => 'ok');
+    Route::middleware(BlockOverriddenRoutes::class)->get('acme/verify', fn (): string => 'x');
+    Route::middleware(BlockOverriddenRoutes::class)->get('acme/update/now', fn (): string => 'x');
+    Route::middleware(BlockOverriddenRoutes::class)->get('dashboard', fn (): string => 'ok');
 
     $this->get('acme/verify')->assertNotFound();
     $this->get('acme/update/now')->assertNotFound();
