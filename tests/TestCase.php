@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\License\Override\Tests;
 
 use Illuminate\Foundation\Application;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Simtabi\Laranail\License\Override\Providers\LicenseOverrideServiceProvider;
+use Simtabi\Laranail\Package\Tools\Testing\IsolatedTestCase;
 
-abstract class TestCase extends Orchestra
+abstract class TestCase extends IsolatedTestCase
 {
     /**
      * @param Application $app
@@ -25,8 +25,4 @@ abstract class TestCase extends Orchestra
     /**
      * @param Application $app
      */
-    protected function defineEnvironment($app): void
-    {
-        $app['config']->set('app.key', 'base64:' . base64_encode(random_bytes(32)));
-    }
 }
