@@ -18,24 +18,6 @@ final class Profile
     public const string DEFAULT_SINK = 'http://127.0.0.1:9/disabled';
 
     /**
-     * @param  array<class-string, class-string>  $rebindings  abstract => concrete
-     * @param  array<string, mixed>  $configOverrides  config key => value (set unconditionally)
-     * @param  array<string, mixed>  $neutralizations  config key => sink value (set only if the key already exists)
-     * @param  list<string>  $blockedRoutes  Request::is() patterns to 404
-     * @param  list<string>  $middlewareGroups  route groups to guard
-     */
-    public function __construct(
-        private readonly OverrideRegistry $registry,
-        public readonly string $name,
-        public bool $enabled = true,
-        public array $rebindings = [],
-        public array $configOverrides = [],
-        public array $neutralizations = [],
-        public array $blockedRoutes = [],
-        public array $middlewareGroups = ['web'],
-    ) {}
-
-    /**
      * Closures run in the register phase (via {@see OverrideRegistry::applyBindings()}).
      * Each receives the container. Rare — most work belongs in {@see onBooted()}.
      *
@@ -61,6 +43,24 @@ final class Profile
      */
     public array $httpFakes = [];
 
+    /**
+     * @param array<class-string, class-string> $rebindings abstract => concrete
+     * @param array<string, mixed> $configOverrides config key => value (set unconditionally)
+     * @param array<string, mixed> $neutralizations config key => sink value (set only if the key already exists)
+     * @param list<string> $blockedRoutes Request::is() patterns to 404
+     * @param list<string> $middlewareGroups route groups to guard
+     */
+    public function __construct(
+        private readonly OverrideRegistry $registry,
+        public readonly string $name,
+        public bool $enabled = true,
+        public array $rebindings = [],
+        public array $configOverrides = [],
+        public array $neutralizations = [],
+        public array $blockedRoutes = [],
+        public array $middlewareGroups = ['web'],
+    ) {}
+
     public function enable(bool $on = true): static
     {
         $this->enabled = $on;
@@ -76,8 +76,8 @@ final class Profile
     /**
      * Rebind a container abstract (e.g. a gate controller) to a no-op concrete.
      *
-     * @param  class-string  $abstract
-     * @param  class-string  $concrete
+     * @param class-string $abstract
+     * @param class-string $concrete
      */
     public function rebind(string $abstract, string $concrete): static
     {
@@ -100,7 +100,7 @@ final class Profile
      * Point call-home config URLs at a dead sink — but only keys that already
      * exist, so a target package that is absent is never polluted.
      *
-     * @param  list<string>  $keys
+     * @param list<string> $keys
      */
     public function neutralize(array $keys, string $sink = self::DEFAULT_SINK): static
     {
@@ -114,8 +114,8 @@ final class Profile
     /**
      * Block vendor route patterns (returned as 404).
      *
-     * @param  list<string>  $patterns
-     * @param  list<string>|null  $groups  route groups to guard (merged; default keeps existing)
+     * @param list<string> $patterns
+     * @param list<string>|null $groups route groups to guard (merged; default keeps existing)
      */
     public function blockRoutes(array $patterns, ?array $groups = null): static
     {

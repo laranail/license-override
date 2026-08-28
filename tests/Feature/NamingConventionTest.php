@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Console\Kernel;
 
 /**
  * The names this package registers into framework-owned registries.

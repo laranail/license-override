@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\License\Override;
 
 use Closure;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Contracts\Container\Container;
-use Illuminate\Http\Client\Request as HttpClientRequest;
+use Throwable;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Http\Client\Request as HttpClientRequest;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
 use Simtabi\Laranail\License\Override\Http\Middleware\BlockOverriddenRoutes;
-use Throwable;
 
 /**
  * Default {@see OverrideRegistry}. Holds profiles and applies them: container
@@ -46,6 +46,34 @@ final class LicenseOverrideManager implements OverrideRegistry
         private readonly Router $router,
     ) {
         $this->report = new BootReport;
+    }
+
+    /**
+     * Boot-safe accessor: the bound singleton, or a self-bootstrapped instance
+     * stored back into the container. Safe before this package's provider is
+     * registered (mirrors laranail/db-guard).
+     */
+    public static function resolve(): OverrideRegistry
+    {
+        $container = \Illuminate\Container\Container::getInstance();
+
+        if ($container->bound(OverrideRegistry::class)) {
+            $bound = $container->make(OverrideRegistry::class);
+
+            if ($bound instanceof OverrideRegistry) {
+                return $bound;
+            }
+        }
+
+        $manager = new self(
+            $container,
+            $container->make('config'),
+            $container->make('router'),
+        );
+
+        $container->instance(OverrideRegistry::class, $manager);
+
+        return $manager;
     }
 
     /**
@@ -207,7 +235,7 @@ final class LicenseOverrideManager implements OverrideRegistry
     }
 
     /**
-     * @param  list<callable>  $hooks
+     * @param list<callable> $hooks
      */
     private function runHooks(array $hooks, string $profile, string $phase): void
     {
@@ -222,7 +250,7 @@ final class LicenseOverrideManager implements OverrideRegistry
      * that stub; any other request returns null from the closure and executes
      * against the real network.
      *
-     * @param  array<string, mixed>  $fakes  host substring => response|Closure(Request)
+     * @param array<string, mixed> $fakes host substring => response|Closure(Request)
      */
     private function installHttpFakes(array $fakes): void
     {
@@ -251,7 +279,7 @@ final class LicenseOverrideManager implements OverrideRegistry
 
             if ($this->container->bound('log')) {
                 $this->container->make('log')->warning(
-                    "[license-override] lever failed ({$context}): {$e->getMessage()}"
+                    "[license-override] lever failed ({$context}): {$e->getMessage()}",
                 );
             }
         }
@@ -273,7 +301,7 @@ final class LicenseOverrideManager implements OverrideRegistry
     }
 
     /**
-     * @param  list<string>  $groups
+     * @param list<string> $groups
      */
     private function guard(array $groups): void
     {
@@ -291,33 +319,5 @@ final class LicenseOverrideManager implements OverrideRegistry
     private function enabledProfiles(): array
     {
         return array_filter($this->profiles, static fn (Profile $p): bool => $p->enabled);
-    }
-
-    /**
-     * Boot-safe accessor: the bound singleton, or a self-bootstrapped instance
-     * stored back into the container. Safe before this package's provider is
-     * registered (mirrors laranail/db-guard).
-     */
-    public static function resolve(): OverrideRegistry
-    {
-        $container = \Illuminate\Container\Container::getInstance();
-
-        if ($container->bound(OverrideRegistry::class)) {
-            $bound = $container->make(OverrideRegistry::class);
-
-            if ($bound instanceof OverrideRegistry) {
-                return $bound;
-            }
-        }
-
-        $manager = new self(
-            $container,
-            $container->make('config'),
-            $container->make('router'),
-        );
-
-        $container->instance(OverrideRegistry::class, $manager);
-
-        return $manager;
     }
 }

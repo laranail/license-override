@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\License\Override\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Simtabi\Laranail\License\Override\BootReport;
-use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
-use Simtabi\Laranail\License\Override\LicenseOverrideManager;
 use Simtabi\Laranail\License\Override\Profile;
+use Simtabi\Laranail\License\Override\BootReport;
+use Simtabi\Laranail\License\Override\LicenseOverrideManager;
+use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
 use Simtabi\Laranail\License\Override\Testing\FakeOverrideRegistry;
 
 /**
@@ -26,11 +26,6 @@ use Simtabi\Laranail\License\Override\Testing\FakeOverrideRegistry;
  */
 final class LicenseOverride extends Facade
 {
-    protected static function getFacadeAccessor(): string
-    {
-        return OverrideRegistry::class;
-    }
-
     /**
      * Swap the registry for a recording fake so a consuming app can assert which
      * overrides its providers registered, without applying any of them.
@@ -43,5 +38,10 @@ final class LicenseOverride extends Facade
         self::getFacadeApplication()->instance(OverrideRegistry::class, $fake);
 
         return $fake;
+    }
+
+    protected static function getFacadeAccessor(): string
+    {
+        return OverrideRegistry::class;
     }
 }
