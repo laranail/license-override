@@ -11,8 +11,7 @@ use Simtabi\Laranail\Package\Tools\Testing\IsolatedTestCase;
 abstract class TestCase extends IsolatedTestCase
 {
     /**
-     * @param Application $app
-     *
+     * @param  Application  $app
      * @return array<int, class-string>
      */
     protected function getPackageProviders($app): array
@@ -23,6 +22,6 @@ abstract class TestCase extends IsolatedTestCase
     }
 
     /**
-     * @param Application $app
+     * @param  Application  $app
      */
 }

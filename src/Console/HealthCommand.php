@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\License\Override\Console;
 
-use Simtabi\Laranail\Package\Tools\Commands\Command;
 use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
+use Simtabi\Laranail\Package\Tools\Commands\Command;
 use Simtabi\Laranail\Package\Tools\Commands\Concerns\SupportsNamespacedNames;
 
 /**
