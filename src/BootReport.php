@@ -13,8 +13,8 @@ namespace Simtabi\Laranail\License\Override;
 final class BootReport
 {
     /**
-     * @param list<string> $applied lever descriptors that ran cleanly (e.g. "froiden.rebind App\\...")
-     * @param list<array{context: string, error: string}> $failures
+     * @param  list<string>  $applied  lever descriptors that ran cleanly (e.g. "froiden.rebind App\\...")
+     * @param  list<array{context: string, error: string}>  $failures
      */
     public function __construct(
         private array $applied = [],

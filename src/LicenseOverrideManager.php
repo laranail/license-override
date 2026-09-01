@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\License\Override;
 
 use Closure;
-use Throwable;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Http\Client\Request as HttpClientRequest;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Traits\Macroable;
-use Illuminate\Contracts\Container\Container;
-use Illuminate\Http\Client\Request as HttpClientRequest;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
 use Simtabi\Laranail\License\Override\Http\Middleware\BlockOverriddenRoutes;
+use Throwable;
 
 /**
  * Default {@see OverrideRegistry}. Holds profiles and applies them: container
@@ -235,7 +235,7 @@ final class LicenseOverrideManager implements OverrideRegistry
     }
 
     /**
-     * @param list<callable> $hooks
+     * @param  list<callable>  $hooks
      */
     private function runHooks(array $hooks, string $profile, string $phase): void
     {
@@ -250,7 +250,7 @@ final class LicenseOverrideManager implements OverrideRegistry
      * that stub; any other request returns null from the closure and executes
      * against the real network.
      *
-     * @param array<string, mixed> $fakes host substring => response|Closure(Request)
+     * @param  array<string, mixed>  $fakes  host substring => response|Closure(Request)
      */
     private function installHttpFakes(array $fakes): void
     {
@@ -301,7 +301,7 @@ final class LicenseOverrideManager implements OverrideRegistry
     }
 
     /**
-     * @param list<string> $groups
+     * @param  list<string>  $groups
      */
     private function guard(array $groups): void
     {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\License\Override\Contracts;
 
-use Simtabi\Laranail\License\Override\Profile;
 use Simtabi\Laranail\License\Override\BootReport;
+use Simtabi\Laranail\License\Override\Profile;
 
 /**
  * Registry of license-override profiles.

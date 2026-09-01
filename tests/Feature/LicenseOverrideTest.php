@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-use Simtabi\Laranail\License\Override\LicenseOverrideManager;
-use Simtabi\Laranail\License\Override\Facades\LicenseOverride;
 use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
+use Simtabi\Laranail\License\Override\Facades\LicenseOverride;
 use Simtabi\Laranail\License\Override\Http\Middleware\BlockOverriddenRoutes;
+use Simtabi\Laranail\License\Override\LicenseOverrideManager;
 
 it('binds the registry contract', function (): void {
     expect(app(OverrideRegistry::class))->toBeInstanceOf(LicenseOverrideManager::class);
@@ -65,8 +65,8 @@ it('the block middleware 404s blocked paths and passes others', function (): voi
 it('loads declarative profiles from config', function (): void {
     config(['some.url' => 'https://x']);
     config(['laranail.license-override.profiles.decl' => [
-        'enabled'      => true,
-        'neutralize'   => ['sink' => 'http://127.0.0.1:9/disabled', 'keys' => ['some.url']],
+        'enabled' => true,
+        'neutralize' => ['sink' => 'http://127.0.0.1:9/disabled', 'keys' => ['some.url']],
         'block_routes' => ['decl/ping'],
     ]]);
 
