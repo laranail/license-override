@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\License\Override\Testing;
 
-use Simtabi\Laranail\License\Override\BootReport;
-use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
-use Simtabi\Laranail\License\Override\Facades\LicenseOverride;
 use Simtabi\Laranail\License\Override\Profile;
+use Simtabi\Laranail\License\Override\BootReport;
+use Simtabi\Laranail\License\Override\Facades\LicenseOverride;
+use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
 
 /**
  * A no-op {@see OverrideRegistry} that records profiles instead of applying them.

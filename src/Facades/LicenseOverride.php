@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\License\Override\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Simtabi\Laranail\License\Override\BootReport;
-use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
-use Simtabi\Laranail\License\Override\LicenseOverrideManager;
 use Simtabi\Laranail\License\Override\Profile;
+use Simtabi\Laranail\License\Override\BootReport;
+use Simtabi\Laranail\License\Override\LicenseOverrideManager;
+use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
 use Simtabi\Laranail\License\Override\Testing\FakeOverrideRegistry;
 
 /**
