@@ -6,8 +6,8 @@ namespace Simtabi\Laranail\License\Override\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Simtabi\Laranail\License\Override\LicenseOverrideManager;
 use Symfony\Component\HttpFoundation\Response;
+use Simtabi\Laranail\License\Override\LicenseOverrideManager;
 
 /**
  * Returns 404 for any path matching the aggregate blocked-route patterns of the

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\License\Override\Providers;
 
 use Override;
-use Simtabi\Laranail\License\Override\Console\HealthCommand;
-use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
-use Simtabi\Laranail\License\Override\LicenseOverrideManager;
 use Simtabi\Laranail\Package\Tools\Package;
+use Simtabi\Laranail\License\Override\Console\HealthCommand;
+use Simtabi\Laranail\License\Override\LicenseOverrideManager;
+use Simtabi\Laranail\License\Override\Contracts\OverrideRegistry;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 
 /**
