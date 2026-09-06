@@ -14,9 +14,15 @@ it('binds the registry contract', function (): void {
 });
 
 it('rebinds a container abstract via a profile applied at runtime', function (): void {
-    interface_exists(GuardTarget::class) || eval('interface GuardTarget {}');
-    class_exists(RealGuard::class) || eval('class RealGuard implements GuardTarget {}');
-    class_exists(NoopGuard::class) || eval('class NoopGuard implements GuardTarget {}');
+    if (! interface_exists(GuardTarget::class)) {
+        eval('interface GuardTarget {}');
+    }
+    if (! class_exists(RealGuard::class)) {
+        eval('class RealGuard implements GuardTarget {}');
+    }
+    if (! class_exists(NoopGuard::class)) {
+        eval('class NoopGuard implements GuardTarget {}');
+    }
 
     app()->bind(GuardTarget::class, RealGuard::class);
 
