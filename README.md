@@ -4,7 +4,7 @@
 [![Static analysis](https://github.com/laranail/license-override/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/laranail/license-override/actions/workflows/static-analysis.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-`laranail/license-override` is not published to Packagist, so there is no registry-version badge to show — see [Install](#install).
+`laranail/license-override` is not published to Packagist, so there is no registry-version badge to show: see [Install](#install).
 
 > A generic, runtime-extensible engine for neutralizing a third-party license / call-home layer in a self-hosted Laravel product — rebind gate contracts, sink call-home URLs, and block vendor routes via composable per-vendor **profiles**, without editing core or vendor files.
 
