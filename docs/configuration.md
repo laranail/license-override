@@ -1,6 +1,6 @@
 # Configuration
 
-`config/license-override.php` holds one key, `profiles` — a map of profile name → spec.
+`config/laranail/license-override.php` holds one key, `profiles` — a map of profile name → spec.
 
 ## Profile spec
 

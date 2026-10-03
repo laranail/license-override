@@ -21,7 +21,7 @@ safe). Every lever applies fail-safe and is recorded — see
 ## Declarative (config)
 
 ```php
-// config/license-override.php
+// config/laranail/license-override.php
 'profiles' => [
     'acme' => [
         'enabled' => env('ACME_OVERRIDE_ENABLED', true),
