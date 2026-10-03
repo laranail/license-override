@@ -16,7 +16,7 @@ The `LicenseOverrideServiceProvider` and the `LicenseOverride` facade are auto-d
 ## Publish the config
 
 ```bash
-php artisan vendor:publish --tag="license-override-config"
+php artisan vendor:publish --tag="laranail::license-override-config"
 ```
 
 ---

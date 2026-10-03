@@ -14,14 +14,25 @@ Requires PHP `^8.4.1 || ^8.5` on Laravel `^13`, built on [`laranail/package-tool
 
 ```bash
 composer require laranail/license-override
-php artisan vendor:publish --tag="license-override-config"   # optional
+php artisan vendor:publish --tag="laranail::license-override-config"   # optional
 ```
 
 The service provider and the `LicenseOverride` facade are auto-discovered.
 
-## Quick start
+## Quick start guide and usage
 
-Declaratively in `config/license-override.php`, or at runtime from any service provider `boot()`:
+### Getting started
+
+Nothing is required to start: the service provider registers itself through package discovery and
+runtime profiles need no config. To declare profiles in config instead, publish it:
+
+```bash
+php artisan vendor:publish --tag="laranail::license-override-config"   # config/laranail/license-override.php
+```
+
+### Usage
+
+Declaratively in `config/laranail/license-override.php`, or at runtime from any service provider `boot()`:
 
 ```php
 use Simtabi\Laranail\License\Override\Facades\LicenseOverride;
@@ -34,6 +45,22 @@ LicenseOverride::profile('acme')
     ->onBooted(fn () => /* seed state, re-register a closure, extend a bound array … */ null)
     ->fakeHttp('license.acme.test', ['status' => true])
     ->apply();
+```
+
+The same profile, declared in config:
+
+```php
+// config/laranail/license-override.php
+'profiles' => [
+    'acme' => [
+        'enabled' => env('ACME_OVERRIDE_ENABLED', true),
+        'rebind' => [\App\Http\Controllers\LoginController::class => \App\Overrides\OpenLoginController::class],
+        'neutralize' => ['sink' => 'http://127.0.0.1:9/disabled', 'keys' => ['acme.verify_url']],
+        'config' => ['acme.telemetry_enabled' => false],
+        'block_routes' => ['acme/verify', 'acme/update/*'],
+        'middleware_groups' => ['web'],
+    ],
+],
 ```
 
 Everything is composable and mutable at runtime; the block middleware reads the live profile set,

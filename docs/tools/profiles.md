@@ -37,7 +37,7 @@ HTTP is untouched.
 - Rebindings only bind abstracts that exist (`class_exists`/`interface_exists`), so a profile that
   targets an absent host class is a safe no-op.
 - **`config:cache`-safe:** the closure-based levers (`onRegister`/`onBooted`/`fakeHttp`) are runtime
-  state, never serialized into config. Declarative profiles in `config/license-override.php` carry
+  state, never serialized into config. Declarative profiles in `config/laranail/license-override.php` carry
   only rebind/config/neutralize/block data.
 - Each lever is applied **fail-safe** and **once** per profile per phase — a throwing hook is caught,
   logged, and recorded in the boot report (see [Diagnostics & testing](../diagnostics-and-testing.md))
