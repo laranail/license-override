@@ -5,6 +5,8 @@ All notable changes to `laranail/license-override` are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.2.0] - 2026-08-15
 
 ### Changed
@@ -72,3 +74,5 @@ Initial public release.
   route blocks; declarable in `config/license-override.php` or registered/mutated at runtime.
 - `Macroable` manager + profiles; boot-safe static `LicenseOverrideManager::resolve()`.
 - Built on `laranail/package-tools` (`PackageServiceProvider`).
+
+[Unreleased]: https://github.com/laranail/license-override/compare/v0.1.0...HEAD
