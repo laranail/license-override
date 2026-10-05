@@ -90,10 +90,6 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/laranail/console"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/laranail/package-tools"
         },
         {
