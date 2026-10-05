@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Dropped the `vcs` repositories for `laranail/console`: nothing in this package's `require` or
+  `require-dev` closure installs it (checked with `composer why` after a fresh `composer update`).
+
 ## [1.2.0] - 2026-08-15
 
 ### Changed
