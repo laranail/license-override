@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `illuminate/contracts` is now declared in `require` at `^13.0`. `src/` imports it, and it was only arriving transitively.
 - Dropped the `vcs` repositories for `laranail/console`: nothing in this package's `require` or
   `require-dev` closure installs it (checked with `composer why` after a fresh `composer update`).
 

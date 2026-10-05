@@ -34,6 +34,7 @@
         "php": "^8.4.1 || ^8.5",
         "illuminate/config": "^13.0",
         "illuminate/container": "^13.0",
+        "illuminate/contracts": "^13.0",
         "illuminate/http": "^13.0",
         "illuminate/routing": "^13.0",
         "illuminate/support": "^13.0",
