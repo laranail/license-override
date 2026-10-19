@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- A guard now keeps literal credentials out of the tests, and keeps every generated credential's
+  purpose a single word, because secret scanners cannot tell a test password from a leaked one.
+  `laranail/package-tools`, which ships it, is now required at `^0.1.10`.
 - `illuminate/contracts` is now declared in `require` at `^13.0`. `src/` imports it, and it was only arriving transitively.
 - Dropped the `vcs` repositories for `laranail/console`: nothing in this package's `require` or
   `require-dev` closure installs it (checked with `composer why` after a fresh `composer update`).
